@@ -199,3 +199,9 @@ cython_debug/
 *.app
 
 # End of https://www.toptal.com/developers/gitignore/api/c++
+
+*.key
+*.crt
+*.csr
+acl
+passwd
