@@ -29,16 +29,26 @@ CERTS=("Broker" "Subscriber" "Publisher")
 
 # CA setup
 CA_SUBJ="/C=US/ST=PA/L=Pittsburgh/CN=LMAuhtority"
-CA_KEY="${BASE_DIR}/Broker/certs/ca.key"
-CA_CERT="${BASE_DIR}/Broker/certs/ca.crt"
+CA_KEY="${BASE_DIR}/Broker/config/certs/ca.key"
+CA_CERT="${BASE_DIR}/Broker/config/certs/ca.crt"
 
 # create the CA certificate
 generate_key "${CA_KEY}"
 openssl req -x509 -new -nodes -key "${CA_KEY}" -sha256 -out "${CA_CERT}" -subj "${CA_SUBJ}"
 
+if [[ ! -f "${CA_CERT}" ]]; then
+    echo "CA certificate not found. Exiting."
+    exit 1
+fi
+
 # Generate Certificates and keys for the Broker, Subscriber, and Publisher
 for CERT in "${CERTS[@]}"; do
-    DIR="${BASE_DIR}/${CERT}/certs"
+
+    if [[ "${CERT}" == "Broker" ]]; then
+        DIR="${BASE_DIR}/Broker/config/certs"
+    else
+        DIR="${BASE_DIR}/${CERT}/certs"
+    fi
 
     # set the filepaths for the keys and certificates
     CURR_KEY="${DIR}/${CERT,,}.key"
