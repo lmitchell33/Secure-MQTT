@@ -21,13 +21,13 @@ const char *CLIENT_KEY = R"(
 -----END PRIVATE KEY-----
 )";
 
-const char *WIFI_SSID "YourNetworkName";
-const char *WIFI_PASSWORD "YourNetworkPassword";
+const char *WIFI_SSID "Gluten Free";
+const char *WIFI_PASSWORD "Miller1821";
 
 const char *MQTT_BROKER "your_broker_address";
 const int MQTT_PORT 8883;
-const char *MQTT_USERNAME = "your_mqtt_username";
-const char *MQTT_PASSWORD = "your_mqtt_password";
+const char *MQTT_USERNAME = "testuser1";
+const char *MQTT_PASSWORD = "Soccer0104*23";
 
 WiFiClient pubClient;
 PubSubClient mqttClient(pubClient);
