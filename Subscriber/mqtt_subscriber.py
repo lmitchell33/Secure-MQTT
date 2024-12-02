@@ -4,10 +4,10 @@ import paho.mqtt.client as mqtt
 # which is why I chose it
 
 USERNAME = "testuser1"
-PASSWORD = "Soccer0104"
+PASSWORD = "Soccer0104*23"
 
 class MQTTSubscriber:
-    def __init__(self, broker:int, port:int, topic:str):
+    def __init__(self, broker:str, port:int, topic:str):
         '''Constructor for the MQTT subscriber class
         Args:
             broker {int} -- IP address for the broker/proxy to connect to
@@ -20,8 +20,8 @@ class MQTTSubscriber:
             None
         '''
         
-        if broker is None or type(broker) != int:
-            raise TypeError("Broker argument is required and must be an integer")
+        if broker is None or type(broker) != str:
+            raise TypeError("Broker argument is required and must be an string")
         if port is None or type(port) != int:
             raise TypeError("Port argument is required and must be an integer")
         if topic is None or type(topic) != str:
@@ -29,12 +29,14 @@ class MQTTSubscriber:
         
         self.topic = topic
 
+        base_dir = "/home/lmitchell3/Documents/SSL-IoT/Broker/config"
+
         # create a client object (id=1) with the specified certificates
         self.client = mqtt.Client(client_id="1")
         self.client.tls_set(
-            ca_certs='certs/ca.crt',
-            certfile='certs/broker.crt',
-            keyfile='certs/broker.key'
+            ca_certs=f'{base_dir}/certs/ca.crt',
+            certfile=f'{base_dir}/certs/broker.crt',
+            keyfile=f'{base_dir}/certs/broker.key'
         )
 
         # set the callback functions of the client object to the functions we created below
@@ -42,7 +44,7 @@ class MQTTSubscriber:
         self.client.on_message = self.on_message
         
         # TODO: uncomment this when authentication is setup
-        # self.client.username_pw_set(username=USERNAME, password=PASSWORD)
+        self.client.username_pw_set(username=USERNAME, password=PASSWORD)
 
         # NOTE: maybe want to change the keepalive to longer
         self.client.connect(broker, port, 60)
