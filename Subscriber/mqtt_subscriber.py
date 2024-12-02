@@ -3,8 +3,8 @@ import paho.mqtt.client as mqtt
 # NOTE: the paho-mqtt library is made by the same developers/company as mosquitto
 # which is why I chose it
 
-USERNAME = "test1"
-PASSWORD = "babyhippo917"
+USERNAME = "testuser1"
+PASSWORD = "Soccer0104"
 
 class MQTTSubscriber:
     def __init__(self, broker:int, port:int, topic:str):
@@ -100,5 +100,6 @@ class MQTTSubscriber:
 
 if __name__ == "__main__":
     topic = "test/sensor"
-    subscriber = MQTTSubscriber()
+    laptop_IP = "192.168.68.69"
+    subscriber = MQTTSubscriber(broker=laptop_IP, port=8883, topic=topic)
     subscriber.start()

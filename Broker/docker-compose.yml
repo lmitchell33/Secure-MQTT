@@ -14,7 +14,10 @@ services:
       - NET_ADMIN
       - NET_RAW
     networks:
-      - mosquitto_network
+      mosquitto_network:
+        ipv4_address: 172.20.0.10
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   nginx:
     image: nginx:latest
@@ -30,24 +33,30 @@ services:
       - NET_ADMIN
       - NET_RAW
     networks:
-      - mosquitto_network
-    command: 
+      mosquitto_network:
+        ipv4_address: 172.20.0.11
 
-  firewall:
-    image: alpine:latest
-    volumes:
-      - /firewall.sh:/bin/firewall.sh
-    network_mode: "host"
-    privileged: true
-    cap_add:
-      - NET_ADMIN
-      - NET_RAW
-    command: sh -c "
-      chmod +x /bin/firewall.sh && 
-      apk add --no-cache iptables && ls -l && 
-      /bin/firewall.sh"
-    restart: always
+  # firewall:
+  #   image: alpine:latest
+  #   volumes:
+  #     - /firewall.sh:/bin/firewall.sh
+  #   network_mode: "host"
+  #   privileged: true
+  #   cap_add:
+  #     - NET_ADMIN
+  #     - NET_RAW
+  #   command: sh -c "
+  #     chmod +x /bin/firewall.sh && 
+  #     apk add --no-cache iptables && ls -l && 
+  #     /bin/firewall.sh"
+  #   restart: always
 
 networks:
   mosquitto_network:
     driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+          gateway: 172.20.0.1
+    driver_opts:
+      com.docker.network.driver.mtu: 1450

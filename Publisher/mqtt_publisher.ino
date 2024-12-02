@@ -24,7 +24,7 @@ const char *CLIENT_KEY = R"(
 const char *WIFI_SSID "Gluten Free";
 const char *WIFI_PASSWORD "Miller1821";
 
-const char *MQTT_BROKER "your_broker_address";
+const char *MQTT_BROKER "192.168.68.69";
 const int MQTT_PORT 8883;
 const char *MQTT_USERNAME = "testuser1";
 const char *MQTT_PASSWORD = "Soccer0104*23";
