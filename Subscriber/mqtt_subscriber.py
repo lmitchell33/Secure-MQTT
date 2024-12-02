@@ -1,4 +1,6 @@
 import paho.mqtt.client as mqtt
+import os
+import ssl
 
 # NOTE: the paho-mqtt library is made by the same developers/company as mosquitto
 # which is why I chose it
@@ -29,15 +31,19 @@ class MQTTSubscriber:
         
         self.topic = topic
 
-        base_dir = "/home/lmitchell3/Documents/SSL-IoT/Broker/config"
+        base_dir = os.path.expanduser("~/SSL-IoT/Broker/config")
 
         # create a client object (id=1) with the specified certificates
-        self.client = mqtt.Client(client_id="1")
+        self.client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, client_id="1")
         self.client.tls_set(
             ca_certs=f'{base_dir}/certs/ca.crt',
-            certfile=f'{base_dir}/certs/broker.crt',
-            keyfile=f'{base_dir}/certs/broker.key'
+            certfile=f'certs/subscriber.crt',
+            keyfile=f'certs/subscriber.key',
+            cert_reqs=ssl.CERT_REQUIRED, 
+            tls_version=ssl.PROTOCOL_TLS_CLIENT
         )
+
+        self.client.tls_insecure_set(True)
 
         # set the callback functions of the client object to the functions we created below
         self.client.on_connect = self.on_connect

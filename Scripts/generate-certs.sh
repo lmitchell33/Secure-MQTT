@@ -20,7 +20,11 @@ sign_csr() {
     local cert_path=$2
     local ca_cert=$3
     local ca_key=$4
-    openssl x509 -req -in "${csr_path}" -CA "${ca_cert}" -CAkey "${ca_key}" -CAcreateserial -out "${cert_path}" -sha256
+    openssl x509 -req -in "${csr_path}" -CA "${ca_cert}" -CAkey "${ca_key}" -CAcreateserial -out "${cert_path}" -sha256 -days 365
+    if [[ $? -ne 0 ]]; then
+        echo "Failed to sign CSR ${csr_path}"
+        exit 1
+    fi
 }
 
 # Base working directory
@@ -34,7 +38,7 @@ CA_CERT="${BASE_DIR}/Broker/config/certs/ca.crt"
 
 # create the CA certificate
 generate_key "${CA_KEY}"
-openssl req -x509 -new -nodes -key "${CA_KEY}" -sha256 -out "${CA_CERT}" -subj "${CA_SUBJ}"
+openssl req -x509 -new -nodes -key "${CA_KEY}" -sha256 -days 365 -out "${CA_CERT}" -subj "${CA_SUBJ}"
 
 if [[ ! -f "${CA_CERT}" ]]; then
     echo "CA certificate not found. Exiting."
@@ -57,6 +61,33 @@ for CERT in "${CERTS[@]}"; do
 
     # generate the keys and certificates
     generate_key "${CURR_KEY}"
-    generate_csr "${CURR_KEY}" "${CURR_CSR}" "${CA_SUBJ}"
+    generate_csr "${CURR_KEY}" "${CURR_CSR}" "/C=US/ST=PA/L=Pittsburgh/CN=${CERT}"
     sign_csr "${CURR_CSR}" "${CERT_PATH}" "${CA_CERT}" "${CA_KEY}"
 done
+
+
+# Verify generated certificates
+echo "Verifying certificates..."
+for CERT in "${CERTS[@]}"; do
+    if [[ "${CERT}" == "Broker" ]]; then
+        DIR="${BASE_DIR}/Broker/config/certs"
+    else
+        DIR="${BASE_DIR}/${CERT}/certs"
+    fi
+
+    CERT_PATH="${DIR}/${CERT,,}.crt"
+
+    if [[ -f "${CERT_PATH}" ]]; then
+        echo "Verifying ${CERT} certificate..."
+        openssl verify -CAfile "${CA_CERT}" "${CERT_PATH}"
+        if [[ $? -eq 0 ]]; then
+            echo "${CERT} certificate verified successfully."
+        else
+            echo "ERROR: Verification failed for ${CERT} certificate."
+        fi
+    else
+        echo "ERROR: ${CERT} certificate not found at ${CERT_PATH}."
+    fi
+done
+
+echo "Verification complete."
