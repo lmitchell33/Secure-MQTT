@@ -200,8 +200,8 @@ cython_debug/
 
 # End of https://www.toptal.com/developers/gitignore/api/c++
 
-*.key
-*.crt
-*.csr
-acl
-passwd
+# *.key
+# *.crt
+# *.csr
+# acl
+# passwd
