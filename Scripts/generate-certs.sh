@@ -11,7 +11,10 @@ generate_csr() {
     local key_path=$1
     local csr_path=$2
     local subj=$3
-    openssl req -new -key "${key_path}" -out "${csr_path}" -subj "${subj}"
+    openssl req -new \
+    -key "${key_path}" \
+    -out "${csr_path}" \
+    -subj "${subj}"
 }
 
 # Function to sign a CSR
@@ -20,11 +23,17 @@ sign_csr() {
     local cert_path=$2
     local ca_cert=$3
     local ca_key=$4
-    openssl x509 -req -in "${csr_path}" -CA "${ca_cert}" -CAkey "${ca_key}" -CAcreateserial -out "${cert_path}" -sha256 -days 365
-    if [[ $? -ne 0 ]]; then
-        echo "Failed to sign CSR ${csr_path}"
-        exit 1
-    fi
+    local ext_file=$5
+
+    openssl x509 -req \
+        -in "${csr_path}" \
+        -CA "${ca_cert}" \
+        -CAkey "${ca_key}" \
+        -CAcreateserial \
+        -out "${cert_path}" \
+        -sha256 \
+        -days 365 \
+        -extfile "${ext_file}"
 }
 
 # Base working directory
@@ -32,18 +41,28 @@ BASE_DIR=~/SSL-IoT
 CERTS=("Broker" "Subscriber" "Publisher")
 
 # CA setup
-CA_SUBJ="/C=US/ST=PA/L=Pittsburgh/CN=LMAuhtority"
 CA_KEY="${BASE_DIR}/Broker/config/certs/ca.key"
 CA_CERT="${BASE_DIR}/Broker/config/certs/ca.crt"
+CA_CNF="${BASE_DIR}/Broker/config/certs/ca.cnf"
+
 
 # create the CA certificate
 generate_key "${CA_KEY}"
-openssl req -x509 -new -nodes -key "${CA_KEY}" -sha256 -days 365 -out "${CA_CERT}" -subj "${CA_SUBJ}"
+openssl req -x509 -new -nodes \
+    -key "${CA_KEY}" \
+    -sha256 \
+    -days 365 \
+    -out "${CA_CERT}" \
+    -config "${CA_CNF}" \
+    -extensions v3_ca \
+    -addext "keyUsage = critical, Certificate Sign, CRL Sign"
 
 if [[ ! -f "${CA_CERT}" ]]; then
     echo "CA certificate not found. Exiting."
     exit 1
 fi
+
+BROKER_EXT="${BASE_DIR}/Broker/config/certs/ca.ext"
 
 # Generate Certificates and keys for the Broker, Subscriber, and Publisher
 for CERT in "${CERTS[@]}"; do
@@ -61,8 +80,10 @@ for CERT in "${CERTS[@]}"; do
 
     # generate the keys and certificates
     generate_key "${CURR_KEY}"
-    generate_csr "${CURR_KEY}" "${CURR_CSR}" "/C=US/ST=PA/L=Pittsburgh/CN=${CERT}"
-    sign_csr "${CURR_CSR}" "${CERT_PATH}" "${CA_CERT}" "${CA_KEY}"
+    generate_csr "${CURR_KEY}" "${CURR_CSR}" "/C=US/ST=Pennsylvania/L=Pittsburgh/O=Duquesne/OU=CS/CN=${CERT}"
+    
+    # Sign with SAN extensions
+    sign_csr "${CURR_CSR}" "${CERT_PATH}" "${CA_CERT}" "${CA_KEY}" "${BROKER_EXT}"
 done
 
 

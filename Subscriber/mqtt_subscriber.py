@@ -46,7 +46,7 @@ class MQTTSubscriber:
             tls_version=ssl.PROTOCOL_TLSv1_2
         )
 
-        self.client.tls_insecure_set(True)
+        self.client.tls_insecure_set(False)
 
         # set the callback functions of the client object to the functions we created below
         self.client.on_connect = self.on_connect
