@@ -2,12 +2,12 @@ import paho.mqtt.client as mqtt
 import os
 import ssl
 from time import sleep
+from datetime import datetime
+import logging
 
-USERNAME = "testuser1"
-PASSWORD = "Soccer0104*23"
 
 class MQTTPublisher:
-    def __init__(self, broker:str, port:int, topic:str):
+    def __init__(self, broker:str, port:int, topic:str, username:str, password:str):
         '''Constructor for the MQTT subscriber class
         Args:
             broker {int} -- IP address for the broker/proxy to connect to
@@ -30,11 +30,13 @@ class MQTTPublisher:
         self.broker = broker
         self.port = port
         self.topic = topic
-        
+        self.username = username
+        self.password = password
+
         base_dir = os.path.expanduser("~/SSL-IoT/Broker/config")
 
         # create a client object (id=1) with the specified certificates
-        self.client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, client_id="1")
+        self.client = mqtt.Client(callback_api_version=mqtt.CallbackAPIVersion.VERSION2, client_id="publisher 2")
         self.client.tls_set(
             ca_certs=f'{base_dir}/certs/ca.crt',
             certfile=f'certs/publisher.crt',
@@ -50,7 +52,7 @@ class MQTTPublisher:
         # self.client.on_publish = self._on_publish
         
         # TODO: uncomment this when authentication is setup
-        self.client.username_pw_set(username=USERNAME, password=PASSWORD)
+        self.client.username_pw_set(username=self.username, password=self.password)
 
         # NOTE: maybe want to change the keepalive to longer
         self.client.connect(self.broker, self.port, 60)
@@ -95,8 +97,14 @@ class MQTTPublisher:
 if __name__ == "__main__":
     topic = "test/sensor"
     laptop_IP = "192.168.68.53"
-    publisher = MQTTPublisher(broker=laptop_IP, port=443, topic=topic)
+    username = "test_publisher"
+    password = "mightyhippo917"
+    port = 8883
+
+
+    publisher = MQTTPublisher(broker=laptop_IP, port=port, topic=topic, username=username, password=password)
     publisher.start()
+
     while True:
         publisher.publish(message="Hello World")
         sleep(2)

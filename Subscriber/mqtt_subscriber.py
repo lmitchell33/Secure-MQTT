@@ -1,15 +1,14 @@
 import paho.mqtt.client as mqtt
 import os
 import ssl
+import logging
 
 # NOTE: the paho-mqtt library is made by the same developers/company as mosquitto
 # which is why I chose it
 
-USERNAME = "testuser1"
-PASSWORD = "Soccer0104*23"
 
 class MQTTSubscriber:
-    def __init__(self, broker:str, port:int, topic:str):
+    def __init__(self, broker, port, topic, username, password):
         '''Constructor for the MQTT subscriber class
         Args:
             broker {int} -- IP address for the broker/proxy to connect to
@@ -30,11 +29,15 @@ class MQTTSubscriber:
             raise TypeError("Topic argument is required and must be an integer")
         
         self.topic = topic
+        self.broker = broker
+        self.port = port
+        self.username = username
+        self.password = password
 
         base_dir = os.path.expanduser("~/SSL-IoT/Broker/config")
 
         # create a client object (id=1) with the specified certificates
-        self.client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, client_id="1")
+        self.client = mqtt.Client(callback_api_version=mqtt.CallbackAPIVersion.VERSION2, client_id="subscriber 1")
         self.client.tls_set(
             ca_certs=f'{base_dir}/certs/ca.crt',
             certfile=f'certs/subscriber.crt',
@@ -50,10 +53,10 @@ class MQTTSubscriber:
         self.client.on_message = self.on_message
         
         # TODO: uncomment this when authentication is setup
-        self.client.username_pw_set(username=USERNAME, password=PASSWORD)
+        self.client.username_pw_set(username=self.username, password=self.password)
 
         # NOTE: maybe want to change the keepalive to longer
-        self.client.connect(broker, port, 60)
+        self.client.connect(self.broker, self.port, 60)
 
 
     def on_connect(self, client, userdata, flags, reason_code, properties):
@@ -109,5 +112,9 @@ class MQTTSubscriber:
 if __name__ == "__main__":
     topic = "test/sensor"
     laptop_IP = "192.168.68.53"
-    subscriber = MQTTSubscriber(broker=laptop_IP, port=443, topic=topic)
+    username = "test_subscriber"
+    password = "babyhippo917"
+    port = 8883
+
+    subscriber = MQTTSubscriber(broker=laptop_IP, port=port, topic=topic, username=username, password=password)
     subscriber.start()

@@ -33,12 +33,12 @@ services:
   #   image: ubuntu:latest
   #   volumes:
   #     - ./firewall.sh:/bin/firewall.sh
-  #   # network_mode: "host"
-  #   privileged: true
+  #   network_mode: "host"  # Gives the container direct access to the host's network
+  #   privileged: true      # Required for modifying iptables
   #   cap_add:
   #     - NET_ADMIN
   #     - NET_RAW
-  #   command: sh -c "/bin/firewall.sh"
+  #   entrypoint: ["/bin/bash", "/bin/firewall.sh"]  # Run the firewall script on startup
   #   restart: always
 
 networks:

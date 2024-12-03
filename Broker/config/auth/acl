@@ -1,2 +1,5 @@
-user testuser1
-topic readwrite #
+user test_publisher
+topic write test/sensor
+
+user test_subscriber
+topic read test/sensor

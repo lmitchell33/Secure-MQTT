@@ -2,30 +2,42 @@
 
 set -e
 
-iptables -F # flush the existing iptables
-iptables -X # Delete  the optional user-defined chain (optional)
-iptables -Z # zero the byte and pakcet counters in all chains
+# flush tables and delete user-defined chains in current rules 
+iptables -F 
+iptables -X 
+iptables -t nat -F
+iptables -t nat -X
+iptables -t mangle -F
+iptables -t mangle -X
 
+# by default, drop all incoming traffic
 iptables -P INPUT DROP
-iptables -P OUTPUT ACCEPT
 iptables -P FORWARD DROP
+iptables -P OUTPUT ACCEPT
 
-# allow a loopback interface
+# Allow loopback traffic
 iptables -A INPUT -i lo -j ACCEPT
+iptables -A OUTPUT -o lo -j ACCEPT
 
-# Allow SSH
-iptables -A INPUT -p tcp --dport 22 -j ACCEPT
-
-# Allow established and related connections
+# Allow established and related connections and prevent interrupting ongoing connections
 iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 
-# Allow traffic to NGINX HTTPS (Port 443) only from trusted IPs
-iptables -A INPUT -p tcp --dport 443 -s 192.168.1.0/24 -j ACCEPT
-iptables -A INPUT -p tcp --dport 443 -s 203.0.113.0/24 -j ACCEPT
+# Allow incoming traffic to NGINX (port 443)
+iptables -A INPUT -p tcp --dport 443 -j ACCEPT
 
-# Allow local traffic to the Mosquitto broker (NGINX proxy needs this)
-iptables -A INPUT -p tcp --dport 8883 -s 127.0.0.1 -j ACCEPT
+# # Allow internal Docker network communication (mosquitto_network)
+# DOCKER_NETWORK="172.18.0.0/16"  # Replace with your Docker bridge network CIDR if different
+# iptables -A INPUT -s $DOCKER_NETWORK -j ACCEPT
 
-# Drop other incoming traffic on these ports
-iptables -A INPUT -p tcp --dport 443 -j DROP
-iptables -A INPUT -p tcp --dport 8883 -j DROP
+# # Allow Mosquito broker traffic on port 8883 from NGINX
+# iptables -A INPUT -p tcp --dport 8883 -s $DOCKER_NETWORK -j ACCEPT
+
+# Allow Mosquitto broker traffic on 127.0.0.1:8883
+iptables -A INPUT -p tcp --dport 8883 -i lo -j ACCEPT
+
+# Log and drop all other incoming traffic
+iptables -A INPUT -j LOG --log-prefix "IPTables-Dropped: " --log-level 4
+iptables -A INPUT -j DROP
+
+# Save iptables rules to ensure persistence
+iptables-save > /etc/iptables/rules.v4
