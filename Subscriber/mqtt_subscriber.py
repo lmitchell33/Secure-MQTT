@@ -40,7 +40,7 @@ class MQTTSubscriber:
             certfile=f'certs/subscriber.crt',
             keyfile=f'certs/subscriber.key',
             cert_reqs=ssl.CERT_REQUIRED, 
-            tls_version=ssl.PROTOCOL_TLS_CLIENT
+            tls_version=ssl.PROTOCOL_TLSv1_2
         )
 
         self.client.tls_insecure_set(True)
@@ -108,6 +108,6 @@ class MQTTSubscriber:
 
 if __name__ == "__main__":
     topic = "test/sensor"
-    laptop_IP = "192.168.68.69"
-    subscriber = MQTTSubscriber(broker=laptop_IP, port=8883, topic=topic)
+    laptop_IP = "192.168.68.53"
+    subscriber = MQTTSubscriber(broker=laptop_IP, port=443, topic=topic)
     subscriber.start()

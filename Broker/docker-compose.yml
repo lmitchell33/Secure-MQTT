@@ -7,17 +7,13 @@ services:
       - ./config/certs:/mosquitto/config/certs
       - ./logs:/mosquitto/log
     ports:
-      - "8883:8883"
+      - 8883:8883
     environment:
       - TZ=EST
-    cap_add:
-      - NET_ADMIN
-      - NET_RAW
     networks:
-      mosquitto_network:
-        ipv4_address: 172.20.0.10
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - mosquitto_network
+    restart: always
+
 
   nginx:
     image: nginx:latest
@@ -26,37 +22,25 @@ services:
       - ./config/certs:/etc/nginx/ssl
       - ./logs:/etc/nginx/log
     ports:
-      - "443:443"
+      - 443:443
     depends_on:
       - mosquitto
-    cap_add:
-      - NET_ADMIN
-      - NET_RAW
     networks:
-      mosquitto_network:
-        ipv4_address: 172.20.0.11
+      - mosquitto_network
+    restart: always
 
   # firewall:
-  #   image: alpine:latest
+  #   image: ubuntu:latest
   #   volumes:
-  #     - /firewall.sh:/bin/firewall.sh
-  #   network_mode: "host"
+  #     - ./firewall.sh:/bin/firewall.sh
+  #   # network_mode: "host"
   #   privileged: true
   #   cap_add:
   #     - NET_ADMIN
   #     - NET_RAW
-  #   command: sh -c "
-  #     chmod +x /bin/firewall.sh && 
-  #     apk add --no-cache iptables && ls -l && 
-  #     /bin/firewall.sh"
+  #   command: sh -c "/bin/firewall.sh"
   #   restart: always
 
 networks:
   mosquitto_network:
     driver: bridge
-    ipam:
-      config:
-        - subnet: 172.20.0.0/16
-          gateway: 172.20.0.1
-    driver_opts:
-      com.docker.network.driver.mtu: 1450
