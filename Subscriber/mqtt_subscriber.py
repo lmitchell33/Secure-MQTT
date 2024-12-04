@@ -46,7 +46,7 @@ class MQTTSubscriber:
             tls_version=ssl.PROTOCOL_TLSv1_2
         )
 
-        # self.client.tls_insecure_set(False)
+        self.client.tls_insecure_set(False)
 
         # set the callback functions of the client object to the functions we created below
         self.client.on_connect = self.on_connect
@@ -111,10 +111,12 @@ class MQTTSubscriber:
 
 if __name__ == "__main__":
     topic = "test/sensor"
-    laptop_IP = "192.168.68.53"
+    internal_IP = "192.168.68.53"
+    public_IP = "24.3.166.47"
     username = "test_subscriber"
     password = "babyhippo917"
-    port = 443
+    internal_port = 443
+    external_port = 333
 
-    subscriber = MQTTSubscriber(broker=laptop_IP, port=port, topic=topic, username=username, password=password)
+    subscriber = MQTTSubscriber(broker=public_IP, port=external_port, topic=topic, username=username, password=password)
     subscriber.start()

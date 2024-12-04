@@ -45,7 +45,7 @@ class MQTTPublisher:
             tls_version=ssl.PROTOCOL_TLSv1_2
         )
 
-        # self.client.tls_insecure_set(False)
+        self.client.tls_insecure_set(False)
 
         # set the callback functions of the client object to the functions we created below
         self.client.on_connect = self.on_connect
@@ -78,10 +78,9 @@ class MQTTPublisher:
             print(f"Connection failed with result code {reason_code}")
 
     
-    # def _on_publish(self, client, userdata, mid):
-    #     """Publish callback"""
-    #     print(f"Message {mid} pubslihed")
-    #     # self.logger.info(f"Message {mid} published successfully")
+    def _on_publish(self, client, userdata, mid, reason_code, properties):
+        """Publish callback"""
+        print(f"Message {mid} pubslihed")
 
     
     def start(self):
@@ -96,13 +95,15 @@ class MQTTPublisher:
 
 if __name__ == "__main__":
     topic = "test/sensor"
-    laptop_IP = "192.168.68.53"
+    internal_IP = "192.168.68.53"
+    public_IP = "24.3.166.47"
     username = "test_publisher"
     password = "mightyhippo917"
-    port = 443
+    internal_port = 443
+    external_port = 333
 
 
-    publisher = MQTTPublisher(broker=laptop_IP, port=port, topic=topic, username=username, password=password)
+    publisher = MQTTPublisher(broker=public_IP, port=external_port, topic=topic, username=username, password=password)
     publisher.start()
 
     while True:
