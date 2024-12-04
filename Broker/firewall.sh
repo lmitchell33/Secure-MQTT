@@ -2,6 +2,8 @@
 
 set -e
 
+apt-get update && apt-get install -y iptables
+
 # flush tables and delete user-defined chains in current rules 
 iptables -F 
 iptables -X 
@@ -40,4 +42,4 @@ iptables -A INPUT -j LOG --log-prefix "IPTables-Dropped: " --log-level 4
 iptables -A INPUT -j DROP
 
 # Save iptables rules to ensure persistence
-iptables-save > /etc/iptables/rules.v4
+# iptables-save > /etc/iptables/rules.v4

@@ -34,12 +34,21 @@ services:
   #   volumes:
   #     - ./firewall.sh:/bin/firewall.sh
   #   network_mode: "host"  # Gives the container direct access to the host's network
-  #   privileged: true      # Required for modifying iptables
+  #   privileged: true
   #   cap_add:
   #     - NET_ADMIN
   #     - NET_RAW
-  #   entrypoint: ["/bin/bash", "/bin/firewall.sh"]  # Run the firewall script on startup
+  #   entrypoint: ["/bin/bash", "apt-get install iptables", "/bin/firewall.sh"] 
   #   restart: always
+
+  # firewall:
+  #   build: .
+  #   network_mode: "host"  # Gives the container direct access to the host's network
+  #   privileged: true
+  #   cap_add:
+  #     - NET_ADMIN
+  #     - NET_RAW 
+    # restart: always
 
 networks:
   mosquitto_network:
