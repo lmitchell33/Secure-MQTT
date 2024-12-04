@@ -1,8 +1,7 @@
 #!/bin/bash
 
+# exit on error
 set -e
-
-apt-get update && apt-get install -y iptables
 
 # flush tables and delete user-defined chains in current rules 
 iptables -F 
@@ -27,12 +26,8 @@ iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 # Allow incoming traffic to NGINX (port 443)
 iptables -A INPUT -p tcp --dport 443 -j ACCEPT
 
-# # Allow internal Docker network communication (mosquitto_network)
-# DOCKER_NETWORK="172.18.0.0/16"  # Replace with your Docker bridge network CIDR if different
-# iptables -A INPUT -s $DOCKER_NETWORK -j ACCEPT
-
-# # Allow Mosquito broker traffic on port 8883 from NGINX
-# iptables -A INPUT -p tcp --dport 8883 -s $DOCKER_NETWORK -j ACCEPT
+# only accept connections that are on my home internal internet
+iptables -A INPUT -s 192.168.0.0/16 -j ACCEPT
 
 # Allow Mosquitto broker traffic on 127.0.0.1:8883
 iptables -A INPUT -p tcp --dport 8883 -i lo -j ACCEPT
