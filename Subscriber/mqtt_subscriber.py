@@ -118,5 +118,6 @@ if __name__ == "__main__":
     internal_port = 443
     external_port = 333
 
-    subscriber = MQTTSubscriber(broker=public_IP, port=external_port, topic=topic, username=username, password=password)
+    # subscriber = MQTTSubscriber(broker=public_IP, port=external_port, topic=topic, username=username, password=password)
+    subscriber = MQTTSubscriber(broker=internal_IP, port=internal_port, topic=topic, username=username, password=password)
     subscriber.start()

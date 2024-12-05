@@ -6,8 +6,9 @@ services:
       - ./config/auth:/mosquitto/config/auth
       - ./config/certs:/mosquitto/config/certs
       - ./logs:/mosquitto/log
-    ports:
-      - 8883:8883
+    # NOTE: the difference between port and expose is that port opens externally and expose only opens to the internal docker network
+    expose: 
+      - 8883
     environment:
       - TZ=EST
     networks:
@@ -28,27 +29,7 @@ services:
       - mosquitto_network
     restart: always
 
-  # firewall:
-  #   image: ubuntu:latest
-  #   volumes:
-  #     - ./firewall.sh:/bin/firewall.sh
-  #   network_mode: "host"  # Gives the container direct access to the host's network
-  #   privileged: true
-  #   cap_add:
-  #     - NET_ADMIN
-  #     - NET_RAW
-  #   entrypoint: ["/bin/bash", "apt-get install iptables", "/bin/firewall.sh"] 
-  #   restart: always
-
-  # firewall:
-  #   build: .
-  #   network_mode: "host" 
-  #   privileged: true
-  #   cap_add:
-  #     - NET_ADMIN
-  #     - NET_RAW 
-    # restart: always
-
 networks:
   mosquitto_network:
     driver: bridge
+ 
