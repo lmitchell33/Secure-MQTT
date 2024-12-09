@@ -3,6 +3,7 @@ import os
 import ssl
 from time import sleep
 import logging
+from datetime import datetime
 
 
 class MQTTPublisher:
@@ -145,6 +146,7 @@ if __name__ == "__main__":
     topic = "test/sensor"
     internal_IP = "192.168.68.53"
     public_IP = "24.3.166.47"
+    school_IP = "10.55.33.155"
     username = "test_publisher"
     password = "mightyhippo917"
     # username = "test"
@@ -154,11 +156,12 @@ if __name__ == "__main__":
 
 
     # publisher = MQTTPublisher(broker=public_IP, port=external_port, topic=topic, username=username, password=password)
-    publisher = MQTTPublisher(broker=internal_IP, port=internal_port, topic=topic, username=username, password=password)
+    # publisher = MQTTPublisher(broker=internal_IP, port=internal_port, topic=topic, username=username, password=password)
+    publisher = MQTTPublisher(broker=school_IP, port=internal_port, topic=topic, username=username, password=password)
 
     publisher.start()
 
     while True:    
-        publisher.publish("Hello World")
+        publisher.publish(f"Hello World sent at: {datetime.now()}")
         sleep(2)
     

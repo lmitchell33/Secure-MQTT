@@ -2,6 +2,7 @@ import paho.mqtt.client as mqtt
 import os
 import ssl
 import logging
+from datetime import datetime
 
 # NOTE: the paho-mqtt library is made by the same developers/company as mosquitto
 # which is why I chose it
@@ -44,6 +45,7 @@ class MQTTSubscriber:
         self.port = port
         self.username = username
         self.password = password
+        self.time_diffs = []
 
         base_dir = os.path.expanduser("~/SSL-IoT/Broker/config")
 
@@ -67,7 +69,7 @@ class MQTTSubscriber:
         self.client.on_connect = self.on_connect
         self.client.on_message = self.on_message
         self.client.on_subscribe = self.on_subscribe
-        self.client.on_disconnect = self.on_disconnect
+        # self.client.on_disconnect = self.on_disconnect
         
         try:
             self.client.username_pw_set(username=self.username, password=self.password)
@@ -131,8 +133,16 @@ class MQTTSubscriber:
 
         self.logger.info(f"Message received on topic: '{msg.topic}' from broker {self.broker}:{self.port} and publisher. Size: {len(message)} bytes")
 
+        time = datetime.strptime(str(str(message).split("sent at: ")[1]), "%Y-%m-%d %H:%M:%S.%f")
+        curr_time_diff = (datetime.now() - time).total_seconds()
+
         # NOTE: this print statement would typically either be a display for a UI or some sort of processing
-        print(f"Received: {message}")
+        print(f"Received: {message}, time diff: {curr_time_diff}")
+        self.time_diffs.append(curr_time_diff)
+
+        if len(self.time_diffs) == 100:
+            print("The average time difference for the encrypted communication was: ", sum(self.time_diffs)/len(self.time_diffs))
+            self.client.loop_stop()
 
 
     def on_subscribe(self, client, usedata, message_id, granted_qos, properties=None):
@@ -145,10 +155,6 @@ class MQTTSubscriber:
             self.logger.error(
                 f"Failed to subscribe to topic '{self.topic}' on broker {self.broker}:{self.port}. ")
 
-
-    def on_disconnect(self, client, userdata, reason_code):
-        """Default on_disconnect callback."""
-        self.logger.info(f"Disconnected from broker with reason code {reason_code}")
 
     def subscribe(self, topic):
         try:
@@ -178,13 +184,16 @@ if __name__ == "__main__":
     topic = "test/sensor"
     internal_IP = "192.168.68.53"
     public_IP = "24.3.166.47"
+    school_IP = "10.55.33.155"
     username = "test_subscriber"
     password = "babyhippo917"
-    # bad_username = "awesomeelephant"
+    # bad_username = "fish fish fish"
     # bad_password = "I am a fish"
     internal_port = 443
     external_port = 333
 
     # subscriber = MQTTSubscriber(broker=public_IP, port=external_port, topic=topic, username=username, password=password)
-    subscriber = MQTTSubscriber(broker=internal_IP, port=internal_port, topic=topic, username=username, password=password)
+    # subscriber = MQTTSubscriber(broker=internal_IP, port=internal_port, topic=topic, username=username, password=password)
+    subscriber = MQTTSubscriber(broker=school_IP, port=internal_port, topic=topic, username=username, password=password)
+    
     subscriber.start()
