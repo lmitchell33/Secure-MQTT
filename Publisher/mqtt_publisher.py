@@ -156,8 +156,8 @@ if __name__ == "__main__":
 
 
     # publisher = MQTTPublisher(broker=public_IP, port=external_port, topic=topic, username=username, password=password)
-    # publisher = MQTTPublisher(broker=internal_IP, port=internal_port, topic=topic, username=username, password=password)
-    publisher = MQTTPublisher(broker=school_IP, port=internal_port, topic=topic, username=username, password=password)
+    publisher = MQTTPublisher(broker=internal_IP, port=internal_port, topic=topic, username=username, password=password)
+    # publisher = MQTTPublisher(broker=school_IP, port=internal_port, topic=topic, username=username, password=password)
 
     publisher.start()
 

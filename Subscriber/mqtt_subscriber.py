@@ -125,7 +125,7 @@ class MQTTSubscriber:
         '''
         message = msg.payload.decode('utf-8')
 
-        if len(message) > 2048: 
+        if len(message) > 4096: 
             # becuase the broker is setup to not allow messages over a certain size, delete the message and log an error
             self.logger.error(f"Size of message received from topic: '{self.topic}' is over the limit set by the broker. Size: {len(message)} bytes")
             del message
@@ -193,7 +193,7 @@ if __name__ == "__main__":
     external_port = 333
 
     # subscriber = MQTTSubscriber(broker=public_IP, port=external_port, topic=topic, username=username, password=password)
-    # subscriber = MQTTSubscriber(broker=internal_IP, port=internal_port, topic=topic, username=username, password=password)
-    subscriber = MQTTSubscriber(broker=school_IP, port=internal_port, topic=topic, username=username, password=password)
+    subscriber = MQTTSubscriber(broker=internal_IP, port=internal_port, topic=topic, username=username, password=password)
+    # subscriber = MQTTSubscriber(broker=school_IP, port=internal_port, topic=topic, username=username, password=password)
     
     subscriber.start()
