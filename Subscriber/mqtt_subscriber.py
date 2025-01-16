@@ -69,7 +69,6 @@ class MQTTSubscriber:
         self.client.on_connect = self.on_connect
         self.client.on_message = self.on_message
         self.client.on_subscribe = self.on_subscribe
-        # self.client.on_disconnect = self.on_disconnect
         
         try:
             self.client.username_pw_set(username=self.username, password=self.password)
@@ -126,7 +125,7 @@ class MQTTSubscriber:
         message = msg.payload.decode('utf-8')
 
         if len(message) > 4096: 
-            # becuase the broker is setup to not allow messages over a certain size, delete the message and log an error
+            # do not let in messages over a the maximum allowed by the broker, delete the message and log an error
             self.logger.error(f"Size of message received from topic: '{self.topic}' is over the limit set by the broker. Size: {len(message)} bytes")
             del message
             return
@@ -146,6 +145,8 @@ class MQTTSubscriber:
 
 
     def on_subscribe(self, client, usedata, message_id, granted_qos, properties=None):
+        '''Subscribe callback function to be called by the Client object when subscribing to a topic'''
+        # check if the subscription was successful and log the success or failure
         if granted_qos[0] == 0:
             self.logger.info(
                 f"Successfully subscribed to topic '{self.topic}' on broker {self.broker}:{self.port}. "
@@ -157,7 +158,9 @@ class MQTTSubscriber:
 
 
     def subscribe(self, topic):
+        '''Subscribe to a topic on the broker'''
         try:
+            # attempt to subscribe to the topic and log the success
             self.client.subscribe(topic)
             self.logger.info(f"Subscription request sent for topic '{topic}' to broker {self.broker}:{self.port}.")
         except Exception as e:
@@ -182,15 +185,21 @@ class MQTTSubscriber:
 
 if __name__ == "__main__":
     topic = "test/sensor"
-    internal_IP = "192.168.68.53"
-    public_IP = "24.3.166.47"
-    school_IP = "10.55.33.155"
-    # username = "test_subscriber" # real username
-    password = "babyhippo917" # real password
-    username = "fish fish fish"
-    # bad_password = "I am a fish"
-    internal_port = 443
-    external_port = 333
+    
+    # IPs testing with
+    internal_IP = os.getenv("INTERNAL_IP")
+    public_IP = os.getenv("PUBLIC_IP")    
+    school_IP = os.getenv("SCHOOL_IP")    
+
+    username = os.getenv("GOOD_SUB_USERNAME") 
+    password = os.getenv("GOOD_SUB_PASSWORD") 
+
+    # bad credentials
+    # username = "Test" 
+    # password = "Test"
+
+    internal_port = int(os.getenv("INTERNAL_PORT")) 
+    external_port = int(os.getenv("EXTERNAL_PORT")) 
 
     # subscriber = MQTTSubscriber(broker=public_IP, port=external_port, topic=topic, username=username, password=password)
     # subscriber = MQTTSubscriber(broker=internal_IP, port=internal_port, topic=topic, username=username, password=password)

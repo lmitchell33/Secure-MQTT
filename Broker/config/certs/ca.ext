@@ -4,7 +4,4 @@ keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
 subjectAltName = @alt_names
 
 [alt_names]
-IP.1 = 192.168.68.53
-IP.2 = 127.0.0.1
-IP.3 = 24.3.166.47
-IP.4 = 10.55.33.155
+Replace these with the IPs in the .env file

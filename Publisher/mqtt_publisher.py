@@ -96,6 +96,7 @@ class MQTTPublisher:
             None
         '''
 
+        # check if the connection was successful and log the success or failure
         if reason_code == 0:
             self.logger.info(
                 f"Successfully connected to broker at {self.broker}:{self.port}. "
@@ -110,6 +111,7 @@ class MQTTPublisher:
     
     def on_publish(self, client, userdata, message_id, reason_code=None, properties=None):
         """Publish callback"""
+        # check if a message was successfully published and log the success or failure
         if reason_code == 0:
             self.logger.info(
                 f"Successfully published to topic '{self.topic}' on broker {self.broker}:{self.port}. "
@@ -121,12 +123,16 @@ class MQTTPublisher:
 
     
     def start(self):
+        '''Start the MQTT publisher process'''
         try:
+            # attempt to start the client and log the success
             self.logger.info(
                 f"Starting MQTT publisher on broker {self.broker}:{self.port},"
                 f"Client ID: {self.client._client_id.decode('utf-8')}, Topic: {self.topic}"
             )
             self.client.loop_start()
+        
+        # Log common errors
         except KeyboardInterrupt:
             self.logger.info("MQTT publisher stopped by user")
         except Exception as e:
@@ -134,7 +140,9 @@ class MQTTPublisher:
 
 
     def publish(self, message=None, qos=1, retain=False):
+        '''Publish a message to the broker'''
         try:
+            # attempt to publish and log the success
             result = self.client.publish(self.topic, payload=message, qos=qos, retain=retain)
             result.wait_for_publish()
             self.logger.info(f"Publish request sent for topic '{self.topic}' to broker {self.broker}:{self.port}.")
@@ -144,15 +152,21 @@ class MQTTPublisher:
 
 if __name__ == "__main__":
     topic = "test/sensor"
-    internal_IP = "192.168.68.53"
-    public_IP = "24.3.166.47"
-    school_IP = "10.55.33.155"
-    username = "test_publisher"
-    password = "mightyhippo917"
-    # username = "test"
-    # password = "test"
-    internal_port = 443
-    external_port = 333
+    
+    # IPs testing with
+    internal_IP = os.getenv("INTERNAL_IP")
+    public_IP = os.getenv("PUBLIC_IP")    
+    school_IP = os.getenv("SCHOOL_IP")    
+
+    username = os.getenv("GOOD_PUB_USERNAME") 
+    password = os.getenv("GOOD_PUB_PASSWORD") 
+
+    # bad credentials
+    # username = "Test" 
+    # password = "Test"
+
+    internal_port = int(os.getenv("INTERNAL_PORT")) 
+    external_port = int(os.getenv("EXTERNAL_PORT")) 
 
 
     # publisher = MQTTPublisher(broker=public_IP, port=external_port, topic=topic, username=username, password=password)
