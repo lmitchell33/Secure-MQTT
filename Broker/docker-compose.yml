@@ -32,3 +32,5 @@ services:
 networks:
   mosquitto_network:
     driver: bridge
+
+    

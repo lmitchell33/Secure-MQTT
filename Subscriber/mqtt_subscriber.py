@@ -185,15 +185,15 @@ if __name__ == "__main__":
     internal_IP = "192.168.68.53"
     public_IP = "24.3.166.47"
     school_IP = "10.55.33.155"
-    username = "test_subscriber"
-    password = "babyhippo917"
-    # bad_username = "fish fish fish"
+    # username = "test_subscriber" # real username
+    password = "babyhippo917" # real password
+    username = "fish fish fish"
     # bad_password = "I am a fish"
     internal_port = 443
     external_port = 333
 
     # subscriber = MQTTSubscriber(broker=public_IP, port=external_port, topic=topic, username=username, password=password)
-    subscriber = MQTTSubscriber(broker=internal_IP, port=internal_port, topic=topic, username=username, password=password)
-    # subscriber = MQTTSubscriber(broker=school_IP, port=internal_port, topic=topic, username=username, password=password)
+    # subscriber = MQTTSubscriber(broker=internal_IP, port=internal_port, topic=topic, username=username, password=password)
+    subscriber = MQTTSubscriber(broker=school_IP, port=internal_port, topic=topic, username=username, password=password)
     
     subscriber.start()
