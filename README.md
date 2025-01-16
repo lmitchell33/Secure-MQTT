@@ -8,12 +8,6 @@ This project implements a fully secure MQTT-based communication system for IoT d
 
 ---
 
-### **System Architecture**
-
-- use Drawio or another system diagram tool to make the diagram and put it here
-
----
-
 ### **Collaborators**
 
 - Lucas Mitchell
