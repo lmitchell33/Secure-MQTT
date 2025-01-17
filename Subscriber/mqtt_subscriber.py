@@ -14,12 +14,9 @@ class MQTTSubscriber:
         Args:
             broker {int} -- IP address for the broker/proxy to connect to
             port {int} -- port to run the subscriber process on
-
-        Kwargs:
-            topics {str} -- topic the subscriber should initally subscribe to
-
-        Returns:
-            None
+            topic {str} -- topic the subscriber should initally subscribe to
+            username {str} -- username for the broker
+            password {str} -- password for the broker
         '''
 
         if not isinstance(broker, str):

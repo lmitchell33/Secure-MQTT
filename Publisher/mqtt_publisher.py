@@ -15,9 +15,6 @@ class MQTTPublisher:
             topic {str} -- topic the subscriber should initally subscribe to
             username {str} -- username for the broker
             password {str} -- password for the broker
-
-        Returns:
-            None
         '''
         
         if not isinstance(broker, str):
