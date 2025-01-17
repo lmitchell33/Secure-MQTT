@@ -12,9 +12,9 @@ class MQTTPublisher:
         Args:
             broker {int} -- IP address for the broker/proxy to connect to
             port {int} -- port to run the subscriber process on
-
-        Kwargs:
-            topics {str} -- topic the subscriber should initally subscribe to
+            topic {str} -- topic the subscriber should initally subscribe to
+            username {str} -- username for the broker
+            password {str} -- password for the broker
 
         Returns:
             None
