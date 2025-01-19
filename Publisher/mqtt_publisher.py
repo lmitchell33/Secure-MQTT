@@ -151,9 +151,9 @@ if __name__ == "__main__":
     topic = "test/sensor"
     
     # IPs testing with
-    internal_IP = os.getenv("INTERNAL_IP")
+    # private_ip = os.getenv("PRIVATE_IP")
     public_IP = os.getenv("PUBLIC_IP")    
-    school_IP = os.getenv("SCHOOL_IP")    
+    # school_IP = os.getenv("SCHOOL_IP")    
 
     username = os.getenv("GOOD_PUB_USERNAME") 
     password = os.getenv("GOOD_PUB_PASSWORD") 
@@ -162,13 +162,10 @@ if __name__ == "__main__":
     # username = "Test" 
     # password = "Test"
 
-    internal_port = int(os.getenv("INTERNAL_PORT")) 
     external_port = int(os.getenv("EXTERNAL_PORT")) 
 
 
-    # publisher = MQTTPublisher(broker=public_IP, port=external_port, topic=topic, username=username, password=password)
-    publisher = MQTTPublisher(broker=internal_IP, port=internal_port, topic=topic, username=username, password=password)
-    # publisher = MQTTPublisher(broker=school_IP, port=internal_port, topic=topic, username=username, password=password)
+    publisher = MQTTPublisher(broker=public_IP, port=external_port, topic=topic, username=username, password=password)
 
     publisher.start()
 
