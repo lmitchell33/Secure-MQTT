@@ -6,7 +6,6 @@ services:
       - ./config/auth:/mosquitto/config/auth
       - ./config/certs:/mosquitto/config/certs
       - ./logs:/mosquitto/log
-    # NOTE: the difference between port and expose is that port opens externally and expose only opens to the internal docker network
     expose: 
       - 8883
     environment:

@@ -18,7 +18,7 @@ iptables -A OUTPUT -o lo -j ACCEPT
 iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 
 # only accept incoming connections from my hotspots IP on port 443 and drop everything else
-iptables -A INPUT -p tcp -s 192.168.0.0/16 --dport 443 -j ACCEPT
+iptables -A INPUT -p tcp -s "${PUBLIC_IP}"/16 --dport 443 -j ACCEPT
 iptables -A INPUT -p tcp --dport 443 -j DROP
 
 # Drop all other incoming traffic

@@ -58,7 +58,7 @@ openssl req -x509 -new -nodes \
     -addext "keyUsage = critical, Certificate Sign, CRL Sign"
 
 if [[ ! -f "${CA_CERT}" ]]; then
-    echo "CA certificate not found. Exiting."
+    echo "CA certificate not found"
     exit 1
 fi
 
@@ -90,6 +90,7 @@ done
 # Verify generated certificates
 echo "Verifying certificates..."
 for CERT in "${CERTS[@]}"; do
+    
     if [[ "${CERT}" == "Broker" ]]; then
         DIR="${BASE_DIR}/Broker/config/certs"
     else
@@ -99,16 +100,15 @@ for CERT in "${CERTS[@]}"; do
     CERT_PATH="${DIR}/${CERT,,}.crt"
 
     if [[ -f "${CERT_PATH}" ]]; then
-        echo "Verifying ${CERT} certificate..."
         openssl verify -CAfile "${CA_CERT}" "${CERT_PATH}"
         if [[ $? -eq 0 ]]; then
-            echo "${CERT} certificate verified successfully."
+            echo "${CERT} certificate verified successfully"
         else
-            echo "ERROR: Verification failed for ${CERT} certificate."
+            echo "Verification failed for ${CERT} certificate"
         fi
     else
-        echo "ERROR: ${CERT} certificate not found at ${CERT_PATH}."
+        echo "${CERT} certificate not found at ${CERT_PATH}"
     fi
 done
 
-echo "Verification complete."
+echo "Verification complete"
