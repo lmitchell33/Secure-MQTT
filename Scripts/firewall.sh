@@ -23,4 +23,3 @@ iptables -A INPUT -p tcp --dport 443 -j DROP
 
 # Drop all other incoming traffic
 iptables -A INPUT -j DROP
-

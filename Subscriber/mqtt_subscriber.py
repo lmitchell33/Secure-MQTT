@@ -7,13 +7,14 @@ from datetime import datetime
 # NOTE: the paho-mqtt library is made by the same developers/company as mosquitto
 # which is why I chose it
 
+BASE_DIR = os.path.expanduser("~/SSL-IoT/Broker/config")
 
 class MQTTSubscriber:
     def __init__(self, broker, port, topic, username, password):
-        '''Constructor for the MQTT subscriber class
+        '''
         Args:
-            broker {int} -- IP address for the broker/proxy to connect to
-            port {int} -- port to run the subscriber process on
+            broker {str} -- IP address for the broker/proxy to connect to
+            port {str} -- port to run the subscriber process on
             topic {str} -- topic the subscriber should initally subscribe to
             username {str} -- username for the broker
             password {str} -- password for the broker
@@ -21,9 +22,9 @@ class MQTTSubscriber:
 
         if not isinstance(broker, str):
             raise TypeError("Broker argument is required and must be an string")
-        if not isinstance(broker, str):
+        if not isinstance(port, str):
             raise TypeError("Port argument is required and must be an integer")
-        if not isinstance(broker, str):
+        if not isinstance(topic, str):
             raise TypeError("Topic argument is required and must be an integer")
         if not isinstance(username, str):
             raise TypeError("Password argument is required and must be an string")
@@ -44,13 +45,11 @@ class MQTTSubscriber:
         self.password = password
         self.time_diffs = []
 
-        base_dir = os.path.expanduser("~/SSL-IoT/Broker/config")
-
         try:
             # create a client object specifying the callback version and a unique id
             self.client = mqtt.Client(callback_api_version=mqtt.CallbackAPIVersion.VERSION2, client_id="subscriber_1")
             self.client.tls_set(
-                ca_certs=f'{base_dir}/certs/ca.crt',
+                ca_certs=f'{BASE_DIR}/certs/ca.crt',
                 certfile=f'certs/subscriber.crt',
                 keyfile=f'certs/subscriber.key',
                 cert_reqs=ssl.CERT_REQUIRED, 
@@ -82,17 +81,14 @@ class MQTTSubscriber:
 
 
     def on_connect(self, client, userdata, flags, reason_code, properties):
-        ''' Connect callback function to be called by the Client object when connecting to a broker
+        ''' Connect callback function which will be called by the Client when connecting to a broker.
+        The paramaters are designed by the paho-mqtt library.
         Args:
             client {obj} -- Paho-MQTT client object for the callback
             userdata {obj} -- user data given to the callback function by the client
             flags {obj} -- flags given to the callback function by the client
             reason_code {int} -- similar to an HTTP status code
             properties {obj} -- properties of the client
-        Kwargs:
-            None
-        Returns:
-            None
         '''
 
         if reason_code == 0:
@@ -114,10 +110,6 @@ class MQTTSubscriber:
             client {obj} -- Paho-MQTT client object for the callback
             userdata {obj} -- user data given to the callback function by the client (typically none)
             msg {obj} -- msg given to the client obj about the topic
-        Kwargs:
-            None
-        Returns:
-            None
         '''
         message = msg.payload.decode('utf-8')
 
@@ -132,7 +124,6 @@ class MQTTSubscriber:
         time = datetime.strptime(str(str(message).split("sent at: ")[1]), "%Y-%m-%d %H:%M:%S.%f")
         curr_time_diff = (datetime.now() - time).total_seconds()
 
-        # NOTE: this print statement would typically either be a display for a UI or some sort of processing
         print(f"Received: {message}, time diff: {curr_time_diff}")
         self.time_diffs.append(curr_time_diff)
 

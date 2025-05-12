@@ -80,7 +80,3 @@ python3 Subscriber/mqtt_subscriber.py
 ```sh
 python3 Publisher/mqtt_publisher.py
 ```
-
-## **Collaborators**
-
-- Lucas Mitchell
