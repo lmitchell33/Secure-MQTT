@@ -8,8 +8,6 @@ services:
       - ./logs:/mosquitto/log
     expose: 
       - 8883
-    # environment:
-    #   - TZ=EST
     networks:
       - mosquitto_network
     restart: always
