@@ -19,18 +19,6 @@ class MQTTSubscriber:
             username {str} -- username for the broker
             password {str} -- password for the broker
         '''
-
-        if not isinstance(broker, str):
-            raise TypeError("Broker argument is required and must be an string")
-        if not isinstance(port, str):
-            raise TypeError("Port argument is required and must be an integer")
-        if not isinstance(topic, str):
-            raise TypeError("Topic argument is required and must be an integer")
-        if not isinstance(username, str):
-            raise TypeError("Password argument is required and must be an string")
-        if not isinstance(password, str):
-            raise TypeError("Username argument is required and must be an string")
-
         # create and setup a logger 
         self.logger = logging.getLogger("MQTTSubscriber")
         self.logger.setLevel(logging.DEBUG)
@@ -62,6 +50,7 @@ class MQTTSubscriber:
         self.client.tls_insecure_set(False)
 
         # set the callback functions of the client object to the functions we created below
+        # each of the callback funcitons are designed by the paho-mqtt library
         self.client.on_connect = self.on_connect
         self.client.on_message = self.on_message
         self.client.on_subscribe = self.on_subscribe
@@ -121,6 +110,7 @@ class MQTTSubscriber:
 
         self.logger.info(f"Message received on topic: '{msg.topic}' from broker {self.broker}:{self.port} and publisher. Size: {len(message)} bytes")
 
+        # calculate the time difference between the time the message was sent and the current time, to see how long it took with encryption
         time = datetime.strptime(str(str(message).split("sent at: ")[1]), "%Y-%m-%d %H:%M:%S.%f")
         curr_time_diff = (datetime.now() - time).total_seconds()
 
@@ -186,8 +176,10 @@ if __name__ == "__main__":
     # username = "Test" 
     # password = "Test"
 
-    external_port = int(os.getenv("EXTERNAL_PORT")) 
+    external_port = int(os.getenv("EXTERNAL_PORT"))
+    # internal_port = os.getenv("INTERNAL_PORT") 
 
     subscriber = MQTTSubscriber(broker=public_IP, port=external_port, topic=topic, username=username, password=password)
+    # subscriber = MQTTSubscriber(broker=internal_IP, port=internal_port, topic=topic, username=username, password=password)
     
     subscriber.start()

@@ -6,6 +6,8 @@ import logging
 from datetime import datetime
 
 
+BASE_DIR = os.path.expanduser("~/SSL-IoT/Broker/config")
+
 class MQTTPublisher:
     def __init__(self, broker, port, topic, username, password):
         '''
@@ -16,18 +18,6 @@ class MQTTPublisher:
             username {str} -- username for the broker
             password {str} -- password for the broker
         '''
-        
-        if not isinstance(broker, str):
-            raise TypeError("Broker argument is required and must be an string")
-        if not isinstance(port, str):
-            raise TypeError("Port argument is required and must be an integer")
-        if not isinstance(topic, str):
-            raise TypeError("Topic argument is required and must be an integer")
-        if not isinstance(username, str):
-            raise TypeError("Password argument is required and must be an string")
-        if not isinstance(password, str):
-            raise TypeError("Username argument is required and must be an string")
-
         # create and setup a logger 
         self.logger = logging.getLogger("MQTTPublisher")
         self.logger.setLevel(logging.DEBUG)
@@ -41,13 +31,11 @@ class MQTTPublisher:
         self.username = username
         self.password = password
 
-        base_dir = os.path.expanduser("~/SSL-IoT/Broker/config")
-
         try:
             # create a client object specifying the callback version and a unique id
             self.client = mqtt.Client(callback_api_version=mqtt.CallbackAPIVersion.VERSION2, client_id="publisher_1")
             self.client.tls_set(
-                ca_certs=f'{base_dir}/certs/ca.crt',
+                ca_certs=f'{BASE_DIR}/certs/ca.crt',
                 certfile=f'certs/publisher.crt',
                 keyfile=f'certs/publisher.key',
                 cert_reqs=ssl.CERT_REQUIRED, 
@@ -87,10 +75,6 @@ class MQTTPublisher:
             flags {obj} -- flags given to the callback function by the client
             reason_code {int} -- similar to an HTTP status code
             properties {obj} -- properties of the client
-        Kwargs:
-            None
-        Returns:
-            None
         '''
 
         # check if the connection was successful and log the success or failure
