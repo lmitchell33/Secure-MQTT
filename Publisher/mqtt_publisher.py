@@ -8,7 +8,7 @@ from datetime import datetime
 
 class MQTTPublisher:
     def __init__(self, broker, port, topic, username, password):
-        '''Constructor for the MQTT subscriber class
+        '''
         Args:
             broker {int} -- IP address for the broker/proxy to connect to
             port {int} -- port to run the subscriber process on
@@ -19,9 +19,9 @@ class MQTTPublisher:
         
         if not isinstance(broker, str):
             raise TypeError("Broker argument is required and must be an string")
-        if not isinstance(broker, str):
+        if not isinstance(port, str):
             raise TypeError("Port argument is required and must be an integer")
-        if not isinstance(broker, str):
+        if not isinstance(topic, str):
             raise TypeError("Topic argument is required and must be an integer")
         if not isinstance(username, str):
             raise TypeError("Password argument is required and must be an string")
