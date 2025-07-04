@@ -1,12 +1,12 @@
 #!/bin/bash
 
-# Function to create a private key
+# create a private key
 generate_key() {
     local key_path=$1
     openssl genrsa -out "${key_path}" 2048
 }
 
-# Function to create a Certificate Signing Request (CSR)
+# create a CSR
 generate_csr() {
     local key_path=$1
     local csr_path=$2
@@ -17,7 +17,7 @@ generate_csr() {
     -subj "${subj}"
 }
 
-# Function to sign a CSR
+# Sign theCSR
 sign_csr() {
     local csr_path=$1
     local cert_path=$2
@@ -37,7 +37,7 @@ sign_csr() {
 }
 
 # Base working directory
-BASE_DIR=~/SSL-IoT
+BASE_DIR=./../
 CERTS=("Broker" "Subscriber" "Publisher")
 
 # CA setup
@@ -73,7 +73,6 @@ for CERT in "${CERTS[@]}"; do
         DIR="${BASE_DIR}/${CERT}/certs"
     fi
 
-    # set the filepaths for the keys and certificates
     CURR_KEY="${DIR}/${CERT,,}.key"
     CURR_CSR="${DIR}/${CERT,,}.csr"
     CERT_PATH="${DIR}/${CERT,,}.crt"
@@ -81,13 +80,11 @@ for CERT in "${CERTS[@]}"; do
     # generate the keys and certificates
     generate_key "${CURR_KEY}"
     generate_csr "${CURR_KEY}" "${CURR_CSR}" "/C=US/ST=Pennsylvania/L=Pittsburgh/O=Duquesne/OU=CS/CN=${CERT}"
-    
-    # Sign with SAN extensions
     sign_csr "${CURR_CSR}" "${CERT_PATH}" "${CA_CERT}" "${CA_KEY}" "${BROKER_EXT}"
 done
 
 
-# Verify generated certificates
+# Verify 
 echo "Verifying certificates..."
 for CERT in "${CERTS[@]}"; do
     

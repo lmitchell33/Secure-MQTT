@@ -3,3 +3,4 @@ topic write test/sensor
 
 user test_subscriber
 topic read test/sensor
+

@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# NOTE: This firewall should be set on the host machine
-
 # flush tables and delete user-defined chains in current rules 
 iptables -F 
 

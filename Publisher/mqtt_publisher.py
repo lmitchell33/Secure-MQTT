@@ -106,14 +106,12 @@ class MQTTPublisher:
     def start(self):
         '''Start the MQTT publisher process'''
         try:
-            # attempt to start the client and log the success
             self.logger.info(
                 f"Starting MQTT publisher on broker {self.broker}:{self.port},"
                 f"Client ID: {self.client._client_id.decode('utf-8')}, Topic: {self.topic}"
             )
             self.client.loop_start()
         
-        # Log common errors
         except KeyboardInterrupt:
             self.logger.info("MQTT publisher stopped by user")
         except Exception as e:
