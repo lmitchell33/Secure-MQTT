@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BASE_DIR=~/SSL-IoT
+BASE_DIR=./../
 CERTS=("Broker" "Subscriber" "Publisher")
 
 for CERT in "${CERTS[@]}"; do

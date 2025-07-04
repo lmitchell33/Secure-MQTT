@@ -1,12 +1,13 @@
 import paho.mqtt.client as mqtt
 import os
+from pathlib import Path
 import ssl
 from time import sleep
 import logging
 from datetime import datetime
 
-
-BASE_DIR = os.path.expanduser("~/SSL-IoT/Broker/config")
+BASE_DIR = Path(__file__).parent.parent.resolve()
+CA_DIR = BASE_DIR / "Broker" / "config"
 
 class MQTTPublisher:
     def __init__(self, broker, port, topic, username, password):
@@ -35,7 +36,7 @@ class MQTTPublisher:
             # create a client object specifying the callback version and a unique id
             self.client = mqtt.Client(callback_api_version=mqtt.CallbackAPIVersion.VERSION2, client_id="publisher_1")
             self.client.tls_set(
-                ca_certs=f'{BASE_DIR}/certs/ca.crt',
+                ca_certs=f'{CA_DIR}/certs/ca.crt',
                 certfile=f'certs/publisher.crt',
                 keyfile=f'certs/publisher.key',
                 cert_reqs=ssl.CERT_REQUIRED, 

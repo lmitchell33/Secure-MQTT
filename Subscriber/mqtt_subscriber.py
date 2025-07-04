@@ -1,5 +1,6 @@
 import paho.mqtt.client as mqtt
 import os
+from pathlib import Path
 import ssl
 import logging
 from datetime import datetime
@@ -7,7 +8,8 @@ from datetime import datetime
 # NOTE: the paho-mqtt library is made by the same developers/company as mosquitto
 # which is why I chose it
 
-BASE_DIR = os.path.expanduser("~/SSL-IoT/Broker/config")
+BASE_DIR = Path(__file__).parent.parent.resolve()
+CA_DIR = BASE_DIR / "Broker" / "config"
 
 class MQTTSubscriber:
     def __init__(self, broker, port, topic, username, password):
@@ -37,7 +39,7 @@ class MQTTSubscriber:
             # create a client object specifying the callback version and a unique id
             self.client = mqtt.Client(callback_api_version=mqtt.CallbackAPIVersion.VERSION2, client_id="subscriber_1")
             self.client.tls_set(
-                ca_certs=f'{BASE_DIR}/certs/ca.crt',
+                ca_certs=f'{CA_DIR}/certs/ca.crt',
                 certfile=f'certs/subscriber.crt',
                 keyfile=f'certs/subscriber.key',
                 cert_reqs=ssl.CERT_REQUIRED, 
